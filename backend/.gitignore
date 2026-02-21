@@ -1,0 +1,32 @@
+node_modules/
+
+# lock файлы npm
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# env переменные
+.env
+.env.*
+
+# системные файлы
+.DS_Store
+Thumbs.db
+
+# логи
+logs
+*.log
+
+# временные файлы
+tmp/
+temp/
+
+# кэш
+.cache/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+*.swp
