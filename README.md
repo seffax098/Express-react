@@ -24,7 +24,7 @@ node app.js
 Backend: http://localhost:3000
 Swagger UI: http://localhost:3000/api-docs
 
-Запуск frontend
+## Запуск frontend
 npm install
 npm start
 
