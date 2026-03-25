@@ -1,9 +1,11 @@
 const { nanoid } = require("nanoid");
 const jwt = require("jsonwebtoken");
 
-const { jwtSecret, accessExpiresIn } = require("../config/auth");
+const { generateRefreshToken, generateAccessToken } = require('../utils/generateTokens')
 const users = require("../data/users");
 const { hashPassword, verifyPassword } = require("../utils/password");
+const { REFRESH_SECRET } = require("../config/auth");
+const refreshTokens = new Set()
 
 const register = async (req, res) => {
     const { email, first_name, last_name, password } = req.body;
@@ -96,21 +98,14 @@ const login = async (req, res) => {
         });
     }
 
-    const accessToken = jwt.sign(
-        {
-            sub: user.id,
-            username: user.email
-        },
-        jwtSecret,
-        {
-            expiresIn: accessExpiresIn
-        }
-    )
+    const accessToken = generateAccessToken(user)
+    const refreshToken = generateRefreshToken(user)
+
+    refreshTokens.add(refreshToken)
 
     return res.status(200).json({
         accessToken,
-        tokenType: "Bearer",
-        expiresIn: accessExpiresIn,
+        refreshToken
     });
 };
 
@@ -133,8 +128,51 @@ const me = (req, res) => {
     });
 };
 
+const refresh = (req, res) => {
+    const { refreshToken } = req.body
+
+    if (!refreshToken) {
+        res.status(400).json({
+            error: 'refreshToken is required'
+        })
+    }
+
+    if (!refreshTokens.has(refreshToken)) {
+        res.status(401).json({
+            error: 'Invalid refreshTokken'
+        })
+    }
+
+    try {
+        const payload = jwt.verify(refreshToken, REFRESH_SECRET)
+        const user = users.find(user => user.id === payload.sub)
+        if (!user) {
+            res.status(401),json({
+                error: 'User not found'
+            })
+        }
+
+        refreshTokens.delete(refreshToken)
+
+        const newRefreshToken = generateRefreshToken(user)
+        const newAccessToken = generateAccessToken(user)
+
+        refreshTokens.add(newRefreshToken)
+
+        res.status(200).json({
+            refreshToken: newRefreshToken,
+            accessToken: newAccessToken
+        })
+    } catch (err) {
+        res.status(401).json({
+            error: 'Invalid or expired refresh token'
+        })
+    }
+}
+
 module.exports = {
     register,
     login,
     me,
+    refresh,
 };

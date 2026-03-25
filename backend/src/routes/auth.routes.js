@@ -1,6 +1,6 @@
 const express = require("express");
 
-const { register, login, me } = require("../controllers/auth.controller");
+const { register, login, me, refresh } = require("../controllers/auth.controller");
 const authMiddleware = require("../middleware/auth");
 
 const router = express.Router();
@@ -127,5 +127,73 @@ router.post("/login", login);
  *               $ref: '#/components/schemas/NotFoundError'
  */
 router.get("/me", authMiddleware, me);
+
+/**
+ * @swagger
+ * /api/auth/refresh:
+ *   post:
+ *     summary: Обновляет access и refresh токены
+ *     tags: [Users]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - refreshToken
+ *             properties:
+ *               refreshToken:
+ *                 type: string
+ *                 description: Валидный refresh token, полученный при логине или предыдущем обновлении
+ *                 example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.refresh.example
+ *     responses:
+ *       200:
+ *         description: Токены успешно обновлены
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 accessToken:
+ *                   type: string
+ *                   description: Новый JWT access token
+ *                 refreshToken:
+ *                   type: string
+ *                   description: Новый JWT refresh token
+ *               example:
+ *                 accessToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.access.example
+ *                 refreshToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.refresh.example
+ *       400:
+ *         description: refreshToken не передан
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *               example:
+ *                 error: refreshToken is required
+ *       401:
+ *         description: Refresh token недействителен, истек или не найден
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *               examples:
+ *                 invalidToken:
+ *                   summary: Невалидный или истекший refresh token
+ *                   value:
+ *                     error: Invalid or expired refresh token
+ *                 unknownToken:
+ *                   summary: Refresh token отсутствует в хранилище
+ *                   value:
+ *                     error: Invalid refreshTokken
+ */
+router.post("/refresh", refresh);
 
 module.exports = router;
