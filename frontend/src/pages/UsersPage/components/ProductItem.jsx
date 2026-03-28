@@ -1,19 +1,22 @@
 import React from "react";
+import { Link } from 'react-router-dom'
 
 export default function ProductItem({ product, onEdit, onDelete }) {
     return (
         <div className="productItem">
             <div className="productMain">
 
-                <div className="productName">
-                    <b>{product.title}</b>
-                </div>
+                <Link to={`/product/${product.id}`}>
+                    <div className="productName">
+                        <b className="productTitle">{product.title}</b>
+                    </div>
+                </Link>
 
                 <div className="productPrice">
                     Цена: {product.price} ₽
                 </div>
 
-                <div className="productCatedory">
+                <div className="productCategory">
                     Категория: {product.category}
                 </div>
 
@@ -39,6 +42,6 @@ export default function ProductItem({ product, onEdit, onDelete }) {
                     Удалить
                 </button>
             </div>
-        </div>
+        </div >
     );
 }

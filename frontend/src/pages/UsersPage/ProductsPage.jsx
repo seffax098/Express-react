@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import "./ProductsPage.scss";
-import ProductsList from "../../components/ProductsList";
-import ProductModal from "../../components/ProductModal";
-import { api } from "../../api";
+import ProductsList from "./components/ProductsList";
+import ProductModal from "./components/ProductModal";
+import { api } from "api";
+import Navbar from "components/Navbar";
+import { getMe } from "api/auth";
 
 export default function ProductsPage() {
 
@@ -11,15 +13,17 @@ export default function ProductsPage() {
     const [modalOpen, setModalOpen] = useState(false);
     const [modalMode, setModalMode] = useState("create");
     const [editingProduct, setEditingProduct] = useState(null);
+    const [user, setUser] = useState(null)
 
     useEffect(() => {
         loadProducts();
+        loadUser()
     }, []);
 
     const loadProducts = async () => {
         try {
             setLoading(true);
-            const data = await api.getProducts(); 
+            const data = await api.getProducts();
             setProducts(data);
         } catch (err) {
             console.error(err);
@@ -29,6 +33,16 @@ export default function ProductsPage() {
         }
     };
 
+    const loadUser = async () => {
+        try {
+            const user = await getMe()
+            setUser(user)
+        } catch (err) {
+            console.log(err)
+            setUser(null)
+        }
+    }
+
     const openCreate = () => {
         setModalMode("create");
         setEditingProduct(null);
@@ -36,6 +50,10 @@ export default function ProductsPage() {
     };
 
     const openEdit = (product) => {
+        if (!user) {
+            alert('Нужно авторизироваться')
+            return
+        }
         setModalMode("edit");
         setEditingProduct(product);
         setModalOpen(true);
@@ -47,25 +65,29 @@ export default function ProductsPage() {
     };
 
     const handleDelete = async (id) => {
+        if (!user) {
+            alert('Нужно авторизироваться')
+            return
+        }
         const ok = window.confirm("Удалить товар?");
         if (!ok) return;
 
         try {
-            await api.deleteProduct(id); 
+            await api.deleteProduct(id);
             setProducts((prev) => prev.filter((u) => u.id !== id));
         } catch (err) {
             console.error(err);
-            alert("Ошибка удаления товара");
+            alert(err);
         }
     };
 
     const handleSubmitModal = async (payload) => {
         try {
             if (modalMode === "create") {
-                const newProduct = await api.createProduct(payload); 
+                const newProduct = await api.createProduct(payload);
                 setProducts((prev) => [...prev, newProduct]);
             } else {
-                const updatedProduct = await api.updateProduct(payload.id, payload); 
+                const updatedProduct = await api.updateProduct(payload.id, payload);
                 setProducts((prev) =>
                     prev.map((u) => (u.id === payload.id ? updatedProduct : u))
                 );
@@ -79,16 +101,10 @@ export default function ProductsPage() {
     };
 
     return (
-        <div className="page">
-            <header className="header">
-                <div className="header__inner">
-                    <div className="brand">Интернет-магазин</div>
-                    <div className="header__right">React + Express</div>
-                </div>
-            </header>
-
-            <main className="main">
-                <div className="container">
+        <div className="app-page">
+            <Navbar />
+            <main className="app-main">
+                <div className="app-container">
                     <div className="toolbar">
                         <h1 className="title">Товары</h1>
                         <button className="btn btn--primary" onClick={openCreate}>
@@ -108,8 +124,8 @@ export default function ProductsPage() {
                 </div>
             </main>
 
-            <footer className="footer">
-                <div className="footer__inner">
+            <footer className="app-footer">
+                <div className="app-footer__inner">
                     © {new Date().getFullYear()} Интернет-магазин
                 </div>
             </footer>

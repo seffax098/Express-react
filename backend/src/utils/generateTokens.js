@@ -27,4 +27,4 @@ const generateRefreshToken = (user) => {
     )
 }
 
-module.exports({generateRefreshToken, generateAccessToken})
+module.exports = { generateRefreshToken, generateAccessToken }
