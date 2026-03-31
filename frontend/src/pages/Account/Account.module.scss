@@ -93,3 +93,25 @@
         color: var(--color-text-muted);
     }
 }
+
+.roleButtons {
+    display: flex;
+    justify-content: space-around;
+
+    button {
+        background-color: var(--color-primary-bg);
+        color: white;
+        border: 1px solid var(--color-primary);
+        border-radius: 10px;
+        padding: 5px 10px;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background-color: var(--color-bg);
+    }
+}
+
+.active {
+    background-color: var(--color-primary) !important;
+}

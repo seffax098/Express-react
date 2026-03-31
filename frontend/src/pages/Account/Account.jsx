@@ -2,6 +2,9 @@ import { useEffect, useState } from 'react';
 import styles from './Account.module.scss'
 import Navbar from 'components/Navbar';
 import { getMe, login, logout, registration } from 'api/auth';
+import Register from './components/Register';
+import Login from './components/Login';
+import User from './components/User';
 
 const getErrorMessage = (err, fallback) => {
     const details = err.response?.data?.details;
@@ -21,6 +24,7 @@ const Account = () => {
     const [firstName, setFirstName] = useState('')
     const [lastName, setLastName] = useState('')
     const [password, setPassword] = useState('')
+    const [role, setRole] = useState('user')
     const [isLogin, setIsLogin] = useState(false)
     const [user, setUser] = useState(null)
     const [error, setError] = useState('')
@@ -47,6 +51,7 @@ const Account = () => {
         setFirstName('')
         setLastName('')
         setPassword('')
+        setRole('user')
     }
 
     const handleRegister = async (e) => {
@@ -56,7 +61,7 @@ const Account = () => {
             setError('')
             setIsSubmitting(true)
 
-            await registration({ email, firstName, lastName, password })
+            await registration({ email, firstName, lastName, password, role })
             await login({ email, password })
             const currentUser = await getMe()
             setUser(currentUser)
@@ -107,70 +112,35 @@ const Account = () => {
                         {isCheckingAuth ? (
                             <div className={styles.status}>Checking session...</div>
                         ) : user ? (
-                            <div className={styles.profileCard}>
-                                <h2>Account</h2>
-                                <div className={styles.profileRow}>
-                                    <span>Email</span>
-                                    <strong>{user.email}</strong>
-                                </div>
-                                <div className={styles.profileRow}>
-                                    <span>First name</span>
-                                    <strong>{user.first_name}</strong>
-                                </div>
-                                <div className={styles.profileRow}>
-                                    <span>Last name</span>
-                                    <strong>{user.last_name}</strong>
-                                </div>
-                                <button type="button" className={styles.formButton} onClick={handleLogout}>
-                                    <span className={styles.formButtonText}>Logout</span>
-                                </button>
-                            </div>
+                            <User user={user} handleLogout={handleLogout} />
                         ) : !isLogin ? (
-                            <form className={styles.form} onSubmit={handleRegister}>
-                                <h2>Register</h2>
-                                <div className={styles.form_input}>
-                                    <span>Email</span>
-                                    <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-                                </div>
-                                <div className={styles.form_input}>
-                                    <span>First Name</span>
-                                    <input type="text" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
-                                </div>
-                                <div className={styles.form_input}>
-                                    <span>Last Name</span>
-                                    <input type="text" value={lastName} onChange={(e) => setLastName(e.target.value)} />
-                                </div>
-                                <div className={styles.form_input}>
-                                    <span>Password</span>
-                                    <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-                                </div>
-                                {error && <p className={styles.error}>{error}</p>}
-                                <button type="submit" className={styles.formButton} disabled={isSubmitting}>
-                                    <span className={styles.formButtonText}>
-                                        {isSubmitting ? 'Loading...' : 'Register'}
-                                    </span>
-                                </button>
-                                <span onClick={() => handleToggleMode(true)} className={styles.setIsLogin}>Уже есть аккаунт?</span>
-                            </form>
+                            <Register
+                                handleRegister={handleRegister}
+                                email={email}
+                                setEmail={setEmail}
+                                firstName={firstName}
+                                setFirstName={setFirstName}
+                                lastName={lastName}
+                                setLastName={setLastName}
+                                password={password}
+                                setPassword={setPassword}
+                                role={role}
+                                setRole={setRole}
+                                error={error}
+                                isSubmitting={isSubmitting}
+                                handleToggleMode={handleToggleMode}
+                            />
                         ) : (
-                            <form className={styles.form} onSubmit={handleLogin}>
-                                <h2>Log in</h2>
-                                <div className={styles.form_input}>
-                                    <span>Email</span>
-                                    <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-                                </div>
-                                <div className={styles.form_input}>
-                                    <span>Password</span>
-                                    <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-                                </div>
-                                {error && <p className={styles.error}>{error}</p>}
-                                <button type="submit" className={styles.formButton} disabled={isSubmitting}>
-                                    <span className={styles.formButtonText}>
-                                        {isSubmitting ? 'Loading...' : 'Login'}
-                                    </span>
-                                </button>
-                                <span onClick={() => handleToggleMode(false)} className={styles.setIsLogin}>Еще нет аккаунта?</span>
-                            </form>
+                            <Login
+                                handleLogin={handleLogin}
+                                email={email}
+                                setEmail={setEmail}
+                                password={password}
+                                setPassword={setPassword}
+                                error={error}
+                                isSubmitting={isSubmitting}
+                                handleToggleMode={handleToggleMode}
+                            />
                         )}
                     </div>
                 </div>

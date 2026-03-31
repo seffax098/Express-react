@@ -1,77 +1,26 @@
 const express = require("express");
 
+const { getUserById, getUsers, updateUser, banUser } = require('../controllers/users.controller')
 const authMiddleWare = require('../middleware/auth')
 const roleMiddleware = require('../middleware/role')
 
-const {
-    createProduct,
-    getProducts,
-    getProductById,
-    updateProduct,
-    deleteProduct,
-} = require("../controllers/products.controller");
-
-const router = express.Router();
+const router = express.Router()
 
 /**
  * @swagger
- * /api/products:
- *   post:
- *     summary: Create a new product
- *     tags: [Products]
- *     security:
- *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/ProductCreateRequest'
- *     responses:
- *       201:
- *         description: Product created successfully
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Product'
- *       400:
- *         description: Validation failed
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ValidationError'
- *       401:
- *         description: Missing or invalid access token
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/UnauthorizedError'
- *       403:
- *         description: Authenticated user does not have access
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ForbiddenError'
- */
-router.post("/",authMiddleWare, roleMiddleware(['seller', 'admin']), createProduct);
-
-/**
- * @swagger
- * /api/products:
+ * /api/users:
  *   get:
- *     summary: Get all products
- *     tags: [Products]
+ *     summary: Get all users
+ *     tags: [Users]
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: Product list
+ *         description: User list
  *         content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Product'
+ *               $ref: '#/components/schemas/UsersResponse'
  *       401:
  *         description: Missing or invalid access token
  *         content:
@@ -85,14 +34,14 @@ router.post("/",authMiddleWare, roleMiddleware(['seller', 'admin']), createProdu
  *             schema:
  *               $ref: '#/components/schemas/ForbiddenError'
  */
-router.get("/",authMiddleWare, roleMiddleware(['user', 'seller', 'admin']), getProducts);
+router.get('/', authMiddleWare, roleMiddleware(['admin']), getUsers)
 
 /**
  * @swagger
- * /api/products/{id}:
+ * /api/users/{id}:
  *   get:
- *     summary: Get a product by id
- *     tags: [Products]
+ *     summary: Get a user by id
+ *     tags: [Users]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -101,14 +50,14 @@ router.get("/",authMiddleWare, roleMiddleware(['user', 'seller', 'admin']), getP
  *         required: true
  *         schema:
  *           type: string
- *         description: Product id
+ *         description: User id
  *     responses:
  *       200:
- *         description: Product data
+ *         description: User data
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Product'
+ *               $ref: '#/components/schemas/UserResponse'
  *       401:
  *         description: Missing or invalid access token
  *         content:
@@ -122,20 +71,20 @@ router.get("/",authMiddleWare, roleMiddleware(['user', 'seller', 'admin']), getP
  *             schema:
  *               $ref: '#/components/schemas/ForbiddenError'
  *       404:
- *         description: Product not found
+ *         description: User not found
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/NotFoundError'
  */
-router.get("/:id", authMiddleWare, roleMiddleware(['user', 'seller', 'admin']), getProductById);
+router.get('/:id', authMiddleWare, roleMiddleware(['admin']), getUserById)
 
 /**
  * @swagger
- * /api/products/{id}:
- *   patch:
- *     summary: Update a product
- *     tags: [Products]
+ * /api/users/{id}:
+ *   put:
+ *     summary: Update a user
+ *     tags: [Users]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -144,28 +93,26 @@ router.get("/:id", authMiddleWare, roleMiddleware(['user', 'seller', 'admin']), 
  *         required: true
  *         schema:
  *           type: string
- *         description: Product id
+ *         description: User id
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/ProductUpdateRequest'
+ *             $ref: '#/components/schemas/UserUpdateRequest'
  *     responses:
  *       200:
- *         description: Updated product
+ *         description: Updated user
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Product'
+ *               $ref: '#/components/schemas/UserResponse'
  *       400:
- *         description: Nothing to update or validation failed
+ *         description: Nothing to update
  *         content:
  *           application/json:
  *             schema:
- *               oneOf:
- *                 - $ref: '#/components/schemas/NothingToUpdateError'
- *                 - $ref: '#/components/schemas/ValidationError'
+ *               $ref: '#/components/schemas/NothingToUpdateError'
  *       401:
  *         description: Missing or invalid access token
  *         content:
@@ -179,20 +126,20 @@ router.get("/:id", authMiddleWare, roleMiddleware(['user', 'seller', 'admin']), 
  *             schema:
  *               $ref: '#/components/schemas/ForbiddenError'
  *       404:
- *         description: Product not found
+ *         description: User not found
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/NotFoundError'
  */
-router.patch("/:id", authMiddleWare, roleMiddleware(['seller', 'admin']), updateProduct);
+router.put('/:id', authMiddleWare, roleMiddleware(['admin']), updateUser)
 
 /**
  * @swagger
- * /api/products/{id}:
+ * /api/users/{id}:
  *   delete:
- *     summary: Delete a product
- *     tags: [Products]
+ *     summary: Block a user
+ *     tags: [Users]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -201,10 +148,14 @@ router.patch("/:id", authMiddleWare, roleMiddleware(['seller', 'admin']), update
  *         required: true
  *         schema:
  *           type: string
- *         description: Product id
+ *         description: User id
  *     responses:
- *       204:
- *         description: Product deleted successfully
+ *       200:
+ *         description: User blocked
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/BlockUserResponse'
  *       401:
  *         description: Missing or invalid access token
  *         content:
@@ -218,12 +169,12 @@ router.patch("/:id", authMiddleWare, roleMiddleware(['seller', 'admin']), update
  *             schema:
  *               $ref: '#/components/schemas/ForbiddenError'
  *       404:
- *         description: Product not found
+ *         description: User not found
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/NotFoundError'
  */
-router.delete("/:id", authMiddleWare, roleMiddleware(['admin']), deleteProduct);
+router.delete('/:id', authMiddleWare, roleMiddleware(['admin']), banUser)
 
-module.exports = router;
+module.exports = router

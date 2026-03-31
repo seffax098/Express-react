@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from 'react-router-dom'
 
-export default function ProductItem({ product, onEdit, onDelete }) {
+export default function ProductItem({ product, onEdit, onDelete, role }) {
     return (
         <div className="productItem">
             <div className="productMain">
@@ -30,7 +30,7 @@ export default function ProductItem({ product, onEdit, onDelete }) {
 
             </div>
 
-            <div className="productActions">
+            {(role === 'seller' || role === 'admin') && <div className="productActions">
                 <button className="btn" onClick={() => onEdit(product)}>
                     Редактировать
                 </button>
@@ -41,7 +41,7 @@ export default function ProductItem({ product, onEdit, onDelete }) {
                 >
                     Удалить
                 </button>
-            </div>
+            </div>}
         </div >
     );
 }

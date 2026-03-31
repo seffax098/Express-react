@@ -3,6 +3,11 @@ import axios from "axios";
 const ACCESS_TOKEN_KEY = "accessToken";
 const REFRESH_TOKEN_KEY = "refreshToken";
 const API_BASE_URL = "http://localhost:3000/api";
+export const AUTH_STATE_CHANGED_EVENT = "auth-state-changed";
+
+const notifyAuthStateChanged = () => {
+    window.dispatchEvent(new Event(AUTH_STATE_CHANGED_EVENT));
+};
 
 export const apiClient = axios.create({
     baseURL: API_BASE_URL,
@@ -35,10 +40,13 @@ export const authStorage = {
         if (refreshToken) {
             localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
         }
+
+        notifyAuthStateChanged();
     },
     clear() {
         localStorage.removeItem(ACCESS_TOKEN_KEY);
         localStorage.removeItem(REFRESH_TOKEN_KEY);
+        notifyAuthStateChanged();
     },
 };
 

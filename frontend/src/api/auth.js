@@ -1,11 +1,12 @@
 import { apiClient, authStorage } from "./client";
 
-export const registration = async ({ email, firstName, lastName, password }) => {
+export const registration = async ({ email, firstName, lastName, password, role }) => {
     const response = await apiClient.post("/auth/register", {
         email,
         first_name: firstName,
         last_name: lastName,
         password,
+        role
     });
 
     return response.data;

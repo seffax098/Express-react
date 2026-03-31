@@ -2,6 +2,7 @@ const express = require("express");
 
 const { register, login, me, refresh } = require("../controllers/auth.controller");
 const authMiddleware = require("../middleware/auth");
+const roleMiddleware = require('../middleware/role')
 
 const router = express.Router();
 
@@ -9,43 +10,29 @@ const router = express.Router();
  * @swagger
  * /api/auth/register:
  *   post:
- *     summary: Создает нового пользователя
- *     tags: [Users]
+ *     summary: Register a new user
+ *     tags: [Auth]
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             required:
- *               - email
- *               - first_name
- *               - last_name
- *               - password
- *             properties:
- *               email:
- *                 type: string
- *               first_name:
- *                 type: string
- *               last_name:
- *                 type: string
- *               password:
- *                 type: string
+ *             $ref: '#/components/schemas/RegisterRequest'
  *     responses:
  *       201:
- *         description: Пользователь успешно создан
+ *         description: User registered successfully
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/AuthUser'
  *       400:
- *         description: Некорректные данные запроса
+ *         description: Validation failed
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/ValidationError'
  *       409:
- *         description: Пользователь с таким email уже существует
+ *         description: Email already exists
  *         content:
  *           application/json:
  *             schema:
@@ -57,32 +44,23 @@ router.post("/register", register);
  * @swagger
  * /api/auth/login:
  *   post:
- *     summary: Выполняет вход пользователя
- *     tags: [Users]
+ *     summary: Authenticate a user
+ *     tags: [Auth]
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             required:
- *               - email
- *               - password
- *             properties:
- *               email:
- *                 type: string
- *                 format: email
- *               password:
- *                 type: string
+ *             $ref: '#/components/schemas/LoginRequest'
  *     responses:
  *       200:
- *         description: Пользователь успешно авторизован
+ *         description: Login successful
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/AuthToken'
+ *               $ref: '#/components/schemas/AuthTokens'
  *       400:
- *         description: Некорректные данные или неверный пароль
+ *         description: Validation failed or password is invalid
  *         content:
  *           application/json:
  *             schema:
@@ -90,7 +68,7 @@ router.post("/register", register);
  *                 - $ref: '#/components/schemas/ValidationError'
  *                 - $ref: '#/components/schemas/InvalidCredentialsError'
  *       404:
- *         description: Пользователь не найден
+ *         description: User not found
  *         content:
  *           application/json:
  *             schema:
@@ -102,23 +80,29 @@ router.post("/login", login);
  * @swagger
  * /api/auth/me:
  *   get:
- *     summary: Выводит информацию о пользователе
- *     tags: [Users]
+ *     summary: Get the current authenticated user
+ *     tags: [Auth]
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: Данные текущего пользователя
+ *         description: Current user data
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/AuthUser'
  *       401:
- *         description: Missing or invalid token
+ *         description: Missing or invalid access token
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/UnauthorizedError'
+ *       403:
+ *         description: Authenticated user does not have access
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ForbiddenError'
  *       404:
  *         description: User not found
  *         content:
@@ -126,73 +110,45 @@ router.post("/login", login);
  *             schema:
  *               $ref: '#/components/schemas/NotFoundError'
  */
-router.get("/me", authMiddleware, me);
+router.get("/me", authMiddleware, roleMiddleware(['user', 'seller', 'admin']),  me);
 
 /**
  * @swagger
  * /api/auth/refresh:
  *   post:
- *     summary: Обновляет access и refresh токены
- *     tags: [Users]
+ *     summary: Refresh access and refresh tokens
+ *     tags: [Auth]
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             required:
- *               - refreshToken
- *             properties:
- *               refreshToken:
- *                 type: string
- *                 description: Валидный refresh token, полученный при логине или предыдущем обновлении
- *                 example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.refresh.example
+ *             $ref: '#/components/schemas/RefreshTokenRequest'
  *     responses:
  *       200:
- *         description: Токены успешно обновлены
+ *         description: Tokens refreshed successfully
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 accessToken:
- *                   type: string
- *                   description: Новый JWT access token
- *                 refreshToken:
- *                   type: string
- *                   description: Новый JWT refresh token
- *               example:
- *                 accessToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.access.example
- *                 refreshToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.refresh.example
+ *               $ref: '#/components/schemas/AuthTokens'
  *       400:
- *         description: refreshToken не передан
+ *         description: refreshToken was not provided
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *               example:
- *                 error: refreshToken is required
+ *               $ref: '#/components/schemas/ErrorResponse'
  *       401:
- *         description: Refresh token недействителен, истек или не найден
+ *         description: Refresh token is invalid or expired
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *               examples:
- *                 invalidToken:
- *                   summary: Невалидный или истекший refresh token
- *                   value:
- *                     error: Invalid or expired refresh token
- *                 unknownToken:
- *                   summary: Refresh token отсутствует в хранилище
- *                   value:
- *                     error: Invalid refreshTokken
+ *               $ref: '#/components/schemas/UnauthorizedError'
+ *       404:
+ *         description: User referenced by refresh token was not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/NotFoundError'
  */
 router.post("/refresh", refresh);
 

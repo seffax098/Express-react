@@ -8,7 +8,7 @@ const { REFRESH_SECRET } = require("../config/auth");
 const refreshTokens = new Set()
 
 const register = async (req, res) => {
-    const { email, first_name, last_name, password } = req.body;
+    const { email, first_name, last_name, password, role } = req.body;
     const errors = {};
 
     if (!email) {
@@ -46,6 +46,7 @@ const register = async (req, res) => {
         email,
         first_name,
         last_name,
+        role: role || 'user',
         password: await hashPassword(password),
     };
 
@@ -56,6 +57,7 @@ const register = async (req, res) => {
         email: newUser.email,
         first_name: newUser.first_name,
         last_name: newUser.last_name,
+        role: newUser.role
     });
 };
 
@@ -125,6 +127,7 @@ const me = (req, res) => {
         email: user.email,
         first_name: user.first_name,
         last_name: user.last_name,
+        role: user.role,
     });
 };
 

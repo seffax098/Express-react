@@ -1,6 +1,7 @@
 import ProductsPage from 'pages/UsersPage/ProductsPage';
 import Account from 'pages/Account';
 import ProductPage from 'pages/ProductPage';
+import AdminPage from 'pages/AdminPage';
 
 export const routesConfig = [
   {
@@ -15,5 +16,8 @@ export const routesConfig = [
     path: '/account',
     element: <Account />,
   },
-
+  {
+    path: '/admin',
+    element: <AdminPage />
+  }
 ];

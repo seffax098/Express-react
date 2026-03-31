@@ -32,3 +32,13 @@
     all: unset;
     cursor: pointer;
 }
+
+.navbar_right {
+    display: flex;
+    gap: 15px;
+}
+
+.navbar_admin {
+    text-decoration: none;
+    color: white;
+}
