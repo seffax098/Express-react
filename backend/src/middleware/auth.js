@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const { jwtSecret } = require("../config/auth");
+const { ACCESS_SECRET } = require("../config/auth");
 
 module.exports = (req, res, next) => {
     const header = req.get("Authorization") || "";
@@ -10,7 +10,7 @@ module.exports = (req, res, next) => {
     }
 
     try {
-        const payload = jwt.verify(token, jwtSecret);
+        const payload = jwt.verify(token, ACCESS_SECRET);
         req.user = payload;
         next();
     } catch (err) {

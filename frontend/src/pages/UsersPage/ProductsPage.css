@@ -7,31 +7,6 @@
     font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial
 }
 
-.header {
-    border-bottom: 1px solid hsla(0, 0%, 100%, .08);
-    background: hsla(0, 0%, 100%, .02)
-}
-
-.header__inner {
-    max-width: 900px;
-    width: 100%;
-    margin: 0 auto;
-    padding: 14px 16px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between
-}
-
-.header__right {
-    opacity: .75;
-    font-size: 13px
-}
-
-.brand {
-    font-weight: 700;
-    letter-spacing: .3px
-}
-
 .main {
     flex: 1;
     display: flex
@@ -104,7 +79,7 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    flex-wrap: wrap
+    flex-wrap: wrap;
 }
 
 .productMain .productId {

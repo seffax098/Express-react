@@ -1,0 +1,70 @@
+:root {
+    --color-bg: #0b0f19;
+    --color-bg-accent: #11192b;
+    --color-surface: rgba(255, 255, 255, 0.03);
+    --color-border: rgba(255, 255, 255, 0.1);
+    --color-border-soft: rgba(255, 255, 255, 0.08);
+    --color-text: #e7eaf3;
+    --color-text-muted: rgba(231, 234, 243, 0.75);
+    --color-primary: rgba(99, 102, 241, 0.55);
+    --color-primary-bg: rgba(99, 102, 241, 0.18);
+    --color-danger: rgba(239, 68, 68, 0.45);
+    --color-danger-bg: rgba(239, 68, 68, 0.12);
+    --shadow-modal: 0 20px 60px rgba(0, 0, 0, 0.35);
+    --font-base: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+html,
+body,
+#root {
+    min-height: 100%;
+}
+
+body {
+    background:
+        radial-gradient(circle at top, rgba(99, 102, 241, 0.12), transparent 35%),
+        linear-gradient(180deg, var(--color-bg-accent) 0%, var(--color-bg) 45%);
+    color: var(--color-text);
+}
+
+a,
+button,
+input,
+textarea,
+select {
+    font: inherit;
+}
+
+.app-page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    color: var(--color-text);
+    font-family: var(--font-base);
+}
+
+.app-main {
+    flex: 1;
+    display: flex;
+}
+
+.app-container {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 16px;
+}
+
+.app-footer {
+    border-top: 1px solid var(--color-border-soft);
+    background: var(--color-surface);
+}
+
+.app-footer__inner {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 14px 16px;
+    color: var(--color-text-muted);
+    font-size: 13px;
+}

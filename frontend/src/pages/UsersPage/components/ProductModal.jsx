@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-export default function ProductModal({ open, mode, initialUser, onClose, onSubmit }) {
+export default function ProductModal({ open, mode, initialProduct, onClose, onSubmit }) {
 
     const [title, setTitle] = useState("");
     const [price, setPrice] = useState("");
@@ -11,12 +11,12 @@ export default function ProductModal({ open, mode, initialUser, onClose, onSubmi
     useEffect(() => {
         if (!open) return;
 
-        setTitle(initialUser?.title ?? "");
-        setPrice(initialUser?.price ?? "");
-        setCategory(initialUser?.category ?? "");
-        setDescription(initialUser?.description ?? "");
-        setStock(initialUser?.stock ?? "");
-    }, [open, initialUser]);
+        setTitle(initialProduct?.title ?? "");
+        setPrice(initialProduct?.price ?? "");
+        setCategory(initialProduct?.category ?? "");
+        setDescription(initialProduct?.description ?? "");
+        setStock(initialProduct?.stock ?? "");
+    }, [open, initialProduct]);
 
     if (!open) return null;
 
@@ -24,7 +24,7 @@ export default function ProductModal({ open, mode, initialUser, onClose, onSubmi
         e.preventDefault();
 
         onSubmit({
-            id: initialUser?.id,
+            id: initialProduct?.id,
             title,
             price: Number(price),
             category,

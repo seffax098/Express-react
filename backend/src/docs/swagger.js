@@ -4,14 +4,28 @@ const swaggerOptions = {
     definition: {
         openapi: "3.0.0",
         info: {
-            title: "API управления товарами",
+            title: "Express React Demo API",
             version: "1.0.0",
-            description: "Простое API для управления товарами",
+            description: "API for authentication, products, and admin user management.",
         },
         servers: [
             {
                 url: "http://localhost:3000",
-                description: "Локальный сервер",
+                description: "Local development server",
+            },
+        ],
+        tags: [
+            {
+                name: "Auth",
+                description: "Authentication and session endpoints",
+            },
+            {
+                name: "Products",
+                description: "Product catalog management",
+            },
+            {
+                name: "Users",
+                description: "Admin-only user management",
             },
         ],
     },

@@ -1,0 +1,117 @@
+.account {
+    border: 1px solid var(--color-border);
+    border-radius: 16px;
+    background: var(--color-surface);
+    padding: 24px;
+    max-width: 520px;
+    margin: 0 auto;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+
+    h2 {
+        margin: 0;
+        text-align: center;
+    }
+
+    &_input {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    input {
+        width: 100%;
+        padding: 10px 12px;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: rgba(255, 255, 255, 0.04);
+        color: inherit;
+        outline: none;
+    }
+}
+
+.formButton {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid var(--color-primary);
+    border-radius: 12px;
+    background: var(--color-primary-bg);
+    color: inherit;
+    cursor: pointer;
+}
+
+.formButton:disabled {
+    opacity: 0.7;
+    cursor: default;
+}
+
+.formButtonText {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.setIsLogin {
+    color: var(--color-text-muted);
+    text-align: center;
+    cursor: pointer;
+}
+
+.error {
+    margin: 0;
+    color: #ff8f8f;
+    text-align: center;
+}
+
+.status {
+    text-align: center;
+    color: var(--color-text-muted);
+}
+
+.profileCard {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    h2 {
+        margin: 0;
+    }
+}
+
+.profileRow {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--color-border-soft);
+
+    span {
+        color: var(--color-text-muted);
+    }
+}
+
+.roleButtons {
+    display: flex;
+    justify-content: space-around;
+
+    button {
+        background-color: var(--color-primary-bg);
+        color: white;
+        border: 1px solid var(--color-primary);
+        border-radius: 10px;
+        padding: 5px 10px;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background-color: var(--color-bg);
+    }
+}
+
+.active {
+    background-color: var(--color-primary) !important;
+}

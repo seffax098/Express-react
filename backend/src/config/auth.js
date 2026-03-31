@@ -1,6 +1,9 @@
 const authConfig = {
-    jwtSecret: process.env.JWT_SECRET || "access_secret",
-    accessExpiresIn: process.env.ACCESS_EXPIRES_IN || "15m",
+    ACCESS_SECRET: "access_secret",
+    REFRESH_SECRET: "refresh_secret",
+    ACCESS_EXPIRES_IN: "15m",
+    REFRESH_EXPIRES_IN: "7d",
+
 };
 
 module.exports = authConfig;

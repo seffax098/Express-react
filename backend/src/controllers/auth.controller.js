@@ -1,12 +1,14 @@
 const { nanoid } = require("nanoid");
 const jwt = require("jsonwebtoken");
 
-const { jwtSecret, accessExpiresIn } = require("../config/auth");
+const { generateRefreshToken, generateAccessToken } = require('../utils/generateTokens')
 const users = require("../data/users");
 const { hashPassword, verifyPassword } = require("../utils/password");
+const { REFRESH_SECRET } = require("../config/auth");
+const refreshTokens = new Set()
 
 const register = async (req, res) => {
-    const { email, first_name, last_name, password } = req.body;
+    const { email, first_name, last_name, password, role } = req.body;
     const errors = {};
 
     if (!email) {
@@ -44,6 +46,7 @@ const register = async (req, res) => {
         email,
         first_name,
         last_name,
+        role: role || 'user',
         password: await hashPassword(password),
     };
 
@@ -54,6 +57,7 @@ const register = async (req, res) => {
         email: newUser.email,
         first_name: newUser.first_name,
         last_name: newUser.last_name,
+        role: newUser.role
     });
 };
 
@@ -96,21 +100,14 @@ const login = async (req, res) => {
         });
     }
 
-    const accessToken = jwt.sign(
-        {
-            sub: user.id,
-            username: user.email
-        },
-        jwtSecret,
-        {
-            expiresIn: accessExpiresIn
-        }
-    )
+    const accessToken = generateAccessToken(user)
+    const refreshToken = generateRefreshToken(user)
+
+    refreshTokens.add(refreshToken)
 
     return res.status(200).json({
         accessToken,
-        tokenType: "Bearer",
-        expiresIn: accessExpiresIn,
+        refreshToken
     });
 };
 
@@ -130,11 +127,60 @@ const me = (req, res) => {
         email: user.email,
         first_name: user.first_name,
         last_name: user.last_name,
+        role: user.role,
     });
+};
+
+const refresh = (req, res) => {
+    const { refreshToken } = req.body;
+
+    if (!refreshToken) {
+        return res.status(400).json({
+            error: "refreshToken is required",
+        });
+    }
+
+    if (!refreshTokens.has(refreshToken)) {
+        return res.status(401).json({
+            error: "Invalid refresh token",
+        });
+    }
+
+    try {
+        const payload = jwt.verify(refreshToken, REFRESH_SECRET);
+        const user = users.find((item) => item.id === payload.sub);
+
+        if (!user) {
+            refreshTokens.delete(refreshToken);
+
+            return res.status(404).json({
+                error: "User not found",
+            });
+        }
+
+        refreshTokens.delete(refreshToken);
+
+        const newRefreshToken = generateRefreshToken(user);
+        const newAccessToken = generateAccessToken(user);
+
+        refreshTokens.add(newRefreshToken);
+
+        return res.status(200).json({
+            refreshToken: newRefreshToken,
+            accessToken: newAccessToken,
+        });
+    } catch (err) {
+        refreshTokens.delete(refreshToken);
+
+        return res.status(401).json({
+            error: "Invalid or expired refresh token",
+        });
+    }
 };
 
 module.exports = {
     register,
     login,
     me,
+    refresh,
 };

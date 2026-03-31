@@ -1,9 +1,13 @@
-import ProductsPage from "./pages/UsersPage/ProductsPage";
+import { Route, Routes } from "react-router-dom";
+import { routesConfig } from "./config/routes";
+
 function App() {
     return (
-        <div className="App">
-            <ProductsPage />
-        </div>
+        <Routes>
+            {routesConfig.map(({ path, element }) => (
+                <Route key={path} path={path} element={element} />
+            ))}
+        </Routes>
     );
 }
 export default App;
